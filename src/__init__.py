@@ -1,0 +1,5 @@
+__version__ = '0.1.0'
+__tool_name__ = 'Package Name'
+__description__ = 'Package Description'
+__author__ = 'Guionardo Furlan'
+__author_email__ = 'guionardo@gmail.com'
