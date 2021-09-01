@@ -7,8 +7,11 @@ verify_ssl = true
 flake8 = "*"
 autopep8 = "*"
 coverage = "*"
+build = "*"
+twine = "*"
 
 [packages]
+azure-servicebus = "*"
 
 [requires]
 python_version = "3.8"

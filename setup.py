@@ -64,7 +64,13 @@ setup(
         where=".",
         exclude=["tests"],
     ),
+    entry_points={
+        "console_scripts": [
+            f"{_name}=src.main:main"
+        ]
+    },
     install_requires=[
+        "azure-servicebus"
     ],
     zip_safe=True,
     python_requires='>=3.6.*'
