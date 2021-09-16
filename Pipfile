@@ -12,6 +12,7 @@ twine = "*"
 
 [packages]
 azure-servicebus = "*"
+xmltodict = "*"
 
 [requires]
 python_version = "3.8"

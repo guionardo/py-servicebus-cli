@@ -6,4 +6,11 @@ Template for python package
 
 ## Usage
 
-- [ ] sbcli 
+- [x] sbcli -h
+- [x] sbcli --version
+- [x] sbcli --connection (Environment var)
+- [x] sbcli --no-logging
+- [x] sbcli --debug
+- [x] sbcli queue list --filter
+- [ ] sbcli queue create
+- [ ] sbcli queue 

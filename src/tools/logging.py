@@ -28,11 +28,20 @@ def setup_logging(no_logging: bool, debug: bool):
     if log_file:
         handlers.append(TimedRotatingFileHandler(log_file, when="midnight",
                                                  interval=1, backupCount=7))
+
+    console_handler = logging.StreamHandler()
+    console_handler.setFormatter(logging.Formatter('%(message)s'))
+
     if handlers:
         logging.basicConfig(format=_FORMAT,
                             handlers=handlers, level=level)
 
         logging.getLogger(__name__).info('INIT')
+        logging.getLogger('console').addHandler(console_handler)
+    else:
+        logging.basicConfig(format='%(message)s', handlers=[
+                            console_handler], level=logging.INFO)
+
     _SETUP_DONE = True
 
 

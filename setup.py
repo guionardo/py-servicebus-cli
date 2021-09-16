@@ -70,7 +70,8 @@ setup(
         ]
     },
     install_requires=[
-        "azure-servicebus"
+        "azure-servicebus",
+        "xmltodict"
     ],
     zip_safe=True,
     python_requires='>=3.6.*'
