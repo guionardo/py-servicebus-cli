@@ -25,16 +25,17 @@ def get_definitions(rel_path, *words):
 
 long_description = read('README.md')
 
-_name, _version, _description, _author, _author_email = get_definitions(
+_name, _version, _description, _author, _author_email, package_name = get_definitions(
     os.path.join('src', '__init__.py'),
     'tool_name',
     'version',
     'description',
     'author',
-    'author_email')
+    'author_email',
+    'package_name')
 
 setup(
-    name=_name,
+    name=package_name,
     version=_version,
     description=_description,
     long_description=long_description,
@@ -52,11 +53,11 @@ setup(
         "Programming Language :: Python :: 3.7",
         "Programming Language :: Python :: 3.8"
     ],
-    url='CHANGE_THIS',
-    keywords='CHANGE_THIS',
+    url='https://github.com/guionardo/py-servicebus-cli',
+    keywords='azure service bus',
     project_urls={
-        "Documentation": "CHANGE_THIS/wiki",
-        "Source": "CHANGE_THIS",
+        "Documentation": "https://github.com/guionardo/py-servicebus-cli/wiki",
+        "Source": "https://github.com/guionardo/py-servicebus-cli",
     },
     author=_author,
     author_email=_author_email,

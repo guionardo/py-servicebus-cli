@@ -9,6 +9,8 @@ autopep8 = "*"
 coverage = "*"
 build = "*"
 twine = "*"
+setuptools = "*"
+wheel = "*"
 
 [packages]
 azure-servicebus = "*"

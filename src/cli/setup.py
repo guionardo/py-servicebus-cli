@@ -38,7 +38,7 @@ def setup_cli() -> argparse.ArgumentParser:
     setup_list_tools(sub_commands)
     # setup_peek_tools(sub_commands)
     setup_queue_tools(sub_commands)
-    setup_topic_tools(sub_commands)
+    # setup_topic_tools(sub_commands)
     setup_download_tools(sub_commands)
     setup_upload_tools(sub_commands)
 
@@ -104,13 +104,17 @@ def setup_upload_tools(sub_comands):
 
 
 def setup_queue_tools(sub_commands):
-    p: argparse.ArgumentParser = sub_commands.add_parser('queue')
+    p: argparse.ArgumentParser = sub_commands.add_parser(
+        'queue',
+        help='Queue management')
     p.set_defaults(func=tool_queue)
     sc = p.add_mutually_exclusive_group(required=True)
 
     sc.add_argument('--list', action='store',
                     default=Output.TEXT, choices=Output.CHOICES)
-    sc.add_argument('--create', action='store')
+    sc.add_argument('--create', action='store', help='Create queue')
+    sc.add_argument('--clear-dead-leter', action='store',
+                    help='Empty dead letter queue')
 
     p.add_argument('--filter', action='store', default=None, required=False,
                    help='Filter for select queue name. You can use * and ?')
