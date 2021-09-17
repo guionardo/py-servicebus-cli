@@ -4,7 +4,7 @@ Azure Service Bus CLI - v0.0.4
 
 [![Python application](https://github.com/guionardo/py-servicebus-cli/actions/workflows/python-app.yml/badge.svg)](https://github.com/guionardo/py-servicebus-cli/actions/workflows/python-app.yml)
 [![Upload Python Package](https://github.com/guionardo/py-servicebus-cli/actions/workflows/python-publish.yml/badge.svg)](https://github.com/guionardo/py-servicebus-cli/actions/workflows/python-publish.yml)
-[![codecov](https://codecov.io/gh/guionardo/py-servicebus-cli/branch/main/graph/badge.svg?token=DGRoPKyAwW)](https://codecov.io/gh/guionardo/py-servicebus-cli)
+[![codecov](https://codecov.io/gh/guionardo/py-servicebus-cli/branch/develop/graph/badge.svg?token=DGRoPKyAwW)](https://codecov.io/gh/guionardo/py-servicebus-cli)
 [![CodeQL](https://github.com/guionardo/py-servicebus-cli/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/guionardo/py-servicebus-cli/actions/workflows/codeql-analysis.yml)
 
 ## Table of Contents
