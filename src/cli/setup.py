@@ -9,18 +9,21 @@ from src.cli.tool_topic import tool_topic
 from src.cli.tool_upload import tool_upload
 from src.tools.logging import get_log_file
 from src.tools.output import Output
+from src.tools.pypi import PyPiInfoFile
 
 SB_CONNECTION_STRING = 'SB_CONNECTION_STRING'
 
 
 def setup_cli() -> argparse.ArgumentParser:
     log_file = get_log_file()
+    pypi = PyPiInfoFile()
     epilog = [
-        'Log file: {0}'.format('disabled' if not log_file else log_file)
+        pypi.update_message(),
+        'Log file: {0}'.format('disabled' if not log_file else log_file),
     ]
     parser = argparse.ArgumentParser(prog=__tool_name__,
                                      description=__description__,
-                                     epilog='\n'.join(epilog))
+                                     epilog='. '.join(epilog))
     connection_string = os.getenv(SB_CONNECTION_STRING)
 
     parser.add_argument('--version', action='version',

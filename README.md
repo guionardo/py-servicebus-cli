@@ -1,6 +1,6 @@
 # sbcli-furlan
 
-Azure Service Bus CLI - v0.0.3
+Azure Service Bus CLI - v0.0.4
 
 [![Python application](https://github.com/guionardo/py-servicebus-cli/actions/workflows/python-app.yml/badge.svg)](https://github.com/guionardo/py-servicebus-cli/actions/workflows/python-app.yml)
 [![Upload Python Package](https://github.com/guionardo/py-servicebus-cli/actions/workflows/python-publish.yml/badge.svg)](https://github.com/guionardo/py-servicebus-cli/actions/workflows/python-publish.yml)
@@ -49,7 +49,8 @@ optional arguments:
   --no-logging
   --debug               Set debug level to log
 
-Log file: /home/guionardo/.log/sbcli.log
+You are using a version ahead (v0.0.4) of pypi (v0.0.3). Log file:
+/home/guionardo/.log/sbcli.log
 ```
 
 ### LIST
