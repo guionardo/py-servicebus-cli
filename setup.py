@@ -1,6 +1,5 @@
 import codecs
 import os
-import sys
 
 from setuptools import find_packages, setup
 
@@ -25,7 +24,8 @@ def get_definitions(rel_path, *words):
 
 long_description = read('README.md')
 
-_name, _version, _description, _author, _author_email, package_name = get_definitions(
+(_name, _version, _description, _author,
+ _author_email, package_name) = get_definitions(
     os.path.join('src', '__init__.py'),
     'tool_name',
     'version',
@@ -49,9 +49,8 @@ setup(
         "Topic :: Software Development :: Build Tools",
         "Topic :: Utilities",
         "Programming Language :: Python",
-        "Programming Language :: Python :: 3.6",
-        "Programming Language :: Python :: 3.7",
-        "Programming Language :: Python :: 3.8"
+        "Programming Language :: Python :: 3.8",
+        "Programming Language :: Python :: 3.9"
     ],
     url='https://github.com/guionardo/py-servicebus-cli',
     keywords='azure service bus',
@@ -75,5 +74,5 @@ setup(
         "xmltodict"
     ],
     zip_safe=True,
-    python_requires='>=3.6.*'
+    python_requires='>=3.8.*'
 )

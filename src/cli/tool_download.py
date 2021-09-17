@@ -1,10 +1,10 @@
 import json
-import logging
 import os
 from argparse import ArgumentError
 
 import xmltodict
 from azure.servicebus import ServiceBusClient, ServiceBusSubQueue
+from src.tools.logging import get_console
 
 
 def tool_download(args):
@@ -15,7 +15,6 @@ def tool_download(args):
 
 
 def _tool_download_queue(args):
-    log = logging.getLogger('console')
     output = _get_output(args.queue, args.output, args.dead_letter)
     dlq = args.dead_letter
 
@@ -23,7 +22,8 @@ def _tool_download_queue(args):
     max_receive = args.max_count or None
     max_timeout = args.timeout or None
     file_prefix = args.file_prefix or ''
-    log.info('Receiving from queue %s to folder %s', args.queue, output)
+    get_console().info('Receiving from queue %s to folder %s',
+                       args.queue, output)
     with ServiceBusClient.from_connection_string(args.connection) as client:
 
         with client.get_queue_receiver(
@@ -51,17 +51,18 @@ def _tool_download_queue(args):
                         f.write(body)
 
                     receiver.complete_message(message)
-                    log.info('Received #%s -> %s',
-                             message.message_id, file_name)
+                    get_console().info('Received #%s -> %s',
+                                       message.message_id, file_name)
 
                 count += received
                 if received == 0 or (max_receive and count >= max_receive):
                     do_again = False
-            log.info('Received %s messages', count)
+            get_console().info('Received %s messages', count)
 
 
 def _tool_download_topic(args):
-    print('Em desenvolvimento')
+    # TODO: Implementar download de tópicos
+    raise NotImplementedError("tool_download_topic")
 
 
 def _get_output(source, output_name, dlq):

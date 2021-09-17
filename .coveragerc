@@ -5,3 +5,6 @@ omit =
     */__init__.py
     */tests/*
     setup.py
+    src/main.py
+    run.py
+    src/cli/setup.py

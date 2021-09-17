@@ -1,7 +1,5 @@
-import logging
-
 from src.cli.setup import setup_cli
-from src.tools.logging import setup_logging
+from src.tools.logging import get_console, setup_logging
 
 
 def main():
@@ -9,11 +7,11 @@ def main():
     try:
         args = parser.parse_args()
         setup_logging(args.no_logging, args.debug)
-        logging.getLogger('console').debug('Args: %s', args)
+        get_console().debug('Args: %s', args)
 
         if hasattr(args, 'func'):
             args.func(args)
     except NotImplementedError as exc:
-        logging.getLogger('console').error('Not implemented: %s', exc)
+        get_console().error('Not implemented: %s', exc)
     except Exception as exc:
-        logging.getLogger('console').error('Error: %s', exc)
+        get_console().error('Error: %s', exc)

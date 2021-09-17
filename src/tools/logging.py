@@ -57,3 +57,18 @@ def get_log_file() -> str:
 
 def get_logger() -> logging.Logger:
     return _LOGGER
+
+
+def get_console() -> logging.Logger:
+    return logging.getLogger('console')
+
+
+def reset_logging():
+    global _LOGGER, _SETUP_DONE
+    logging.root.handlers.clear()
+    _LOGGER = None
+    _SETUP_DONE = False
+
+
+def setup_done() -> bool:
+    return _SETUP_DONE
