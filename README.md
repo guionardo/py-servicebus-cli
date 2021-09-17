@@ -1,6 +1,6 @@
 # sbcli-furlan
 
-Azure Service Bus CLI - v0.0.4
+Azure Service Bus CLI - v0.0.5
 
 [![Python application](https://github.com/guionardo/py-servicebus-cli/actions/workflows/python-app.yml/badge.svg)](https://github.com/guionardo/py-servicebus-cli/actions/workflows/python-app.yml)
 [![Upload Python Package](https://github.com/guionardo/py-servicebus-cli/actions/workflows/python-publish.yml/badge.svg)](https://github.com/guionardo/py-servicebus-cli/actions/workflows/python-publish.yml)
@@ -13,7 +13,9 @@ Azure Service Bus CLI - v0.0.4
   - [Install](#install)
   - [Help](#help)
     - [LIST](#list)
+    - [PEEK](#peek)
     - [QUEUE](#queue)
+    - [TOPIC](#topic)
     - [DOWNLOAD](#download)
     - [UPLOAD](#upload)
 
@@ -29,13 +31,14 @@ pip install sbcli-furlan
 $ sbcli --help
 usage: sbcli [-h] [--version] [--connection CONNECTION] [--no-logging]
              [--debug]
-             {list,queue,download,upload} ...
+             {list,peek,queue,topic,download,upload} ...
 
 Azure Service Bus CLI
 
 positional arguments:
-  {list,queue,download,upload}
+  {list,peek,queue,topic,download,upload}
     list                List entities
+    peek                Peek message
     queue               Queue management
     download            Download message
     upload              Upload message
@@ -49,7 +52,7 @@ optional arguments:
   --no-logging
   --debug               Set debug level to log
 
-You are using a version ahead (v0.0.4) of pypi (v0.0.3). Log file:
+You are using a version ahead (v0.0.5) of pypi (v0.0.3). Log file:
 /home/guionardo/.log/sbcli.log
 ```
 
@@ -67,21 +70,52 @@ optional arguments:
   --type {text,csv,table}
 ```
 
+### PEEK
+
+``` bash
+$ sbcli peek --help
+usage: sbcli peek [-h] [--output OUTPUT] [--file-prefix FILE_PREFIX]
+                  [--dead-letter] [--timeout TIMEOUT]
+                  (--queue QUEUE | --topic TOPIC)
+                  [--max-count MAX_COUNT | --all]
+
+optional arguments:
+  -h, --help            show this help message and exit
+  --output OUTPUT, -o OUTPUT
+                        Output folder (default = queue/topic name)
+  --file-prefix FILE_PREFIX
+                        Fileprefix
+  --dead-letter         Dead letter queue
+  --timeout TIMEOUT     Timeout in seconds
+  --queue QUEUE         Queue name
+  --topic TOPIC         Topic name
+  --max-count MAX_COUNT
+                        Maximum message count
+  --all                 Download all messages
+```
+
 ### QUEUE
 
 ``` bash
 $ sbcli queue --help
-usage: sbcli queue [-h]
-                   (--list {text,csv,table} | --create CREATE | --clear-dead-leter CLEAR_DEAD_LETER)
-                   [--filter FILTER]
+usage: sbcli queue [-h] (--create queue_name | --clear-dead-letter queue_name)
 
 optional arguments:
   -h, --help            show this help message and exit
-  --list {text,csv,table}
-  --create CREATE       Create queue
-  --clear-dead-leter CLEAR_DEAD_LETER
+  --create queue_name   Create queue
+  --clear-dead-letter queue_name
                         Empty dead letter queue
-  --filter FILTER       Filter for select queue name. You can use * and ?
+```
+
+### TOPIC
+
+``` bash
+$ sbcli topic --help
+usage: sbcli topic [-h] [--create]
+
+optional arguments:
+  -h, --help  show this help message and exit
+  --create
 ```
 
 ### DOWNLOAD

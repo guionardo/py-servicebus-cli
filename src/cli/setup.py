@@ -4,6 +4,7 @@ import os
 from src import __description__, __tool_name__, __version__
 from src.cli.tool_download import tool_download
 from src.cli.tool_list import tool_list
+from src.cli.tool_peek import tool_peek
 from src.cli.tool_queue import tool_queue
 from src.cli.tool_topic import tool_topic
 from src.cli.tool_upload import tool_upload
@@ -12,6 +13,8 @@ from src.tools.output import Output
 from src.tools.pypi import PyPiInfoFile
 
 SB_CONNECTION_STRING = 'SB_CONNECTION_STRING'
+QUEUE_NAME = 'Queue name'
+TOPIC_NAME = 'Topic name'
 
 
 def setup_cli() -> argparse.ArgumentParser:
@@ -39,9 +42,9 @@ def setup_cli() -> argparse.ArgumentParser:
     sub_commands = parser.add_subparsers()
 
     setup_list_tools(sub_commands)
-    # setup_peek_tools(sub_commands)
+    setup_peek_tools(sub_commands)
     setup_queue_tools(sub_commands)
-    # setup_topic_tools(sub_commands)
+    setup_topic_tools(sub_commands)
     setup_download_tools(sub_commands)
     setup_upload_tools(sub_commands)
 
@@ -64,12 +67,22 @@ def setup_list_tools(sub_commands):
 def setup_peek_tools(sub_commands):
     p: argparse.ArgumentParser = sub_commands.add_parser(
         'peek', help='Peek message')
-    p.set_defaults(func=tool_list)
+    p.set_defaults(func=tool_peek)
+    p.add_argument('--output', '-o', action='store',
+                   help='Output folder (default = queue/topic name)')
+    p.add_argument('--file-prefix', action='store', help='Fileprefix')
+    p.add_argument('--dead-letter', action='store_true',
+                   help='Dead letter queue')
+    p.add_argument('--timeout', action='store', type=int,
+                   default=30, help='Timeout in seconds')
     sc = p.add_mutually_exclusive_group(required=True)
-    sc.add_argument('--queue', action='store',
-                    help="Queue name")
-    sc.add_argument('--topic', action='store',
-                    help='Topic name')
+    sc.add_argument('--queue', action='store', help=QUEUE_NAME)
+    sc.add_argument('--topic', action='store', help=TOPIC_NAME)
+
+    sq = p.add_mutually_exclusive_group(required=False)
+    sq.add_argument('--max-count', action='store', type=int,
+                    default=0, help='Maximum message count')
+    sq.add_argument('--all', action='store_true', help='Download all messages')
 
 
 def setup_download_tools(sub_commands):
@@ -84,8 +97,8 @@ def setup_download_tools(sub_commands):
     p.add_argument('--timeout', action='store', type=int,
                    default=30, help='Timeout in seconds')
     sc = p.add_mutually_exclusive_group(required=True)
-    sc.add_argument('--queue', action='store', help='Queue name')
-    sc.add_argument('--topic', action='store', help='Topic name')
+    sc.add_argument('--queue', action='store', help=QUEUE_NAME)
+    sc.add_argument('--topic', action='store', help=TOPIC_NAME)
 
     sq = p.add_mutually_exclusive_group(required=False)
     sq.add_argument('--max-count', action='store', type=int,
@@ -102,8 +115,8 @@ def setup_upload_tools(sub_comands):
     p.add_argument('--max-count', action='store', type=int,
                    default=0, help='Maximum message count')
     sc = p.add_mutually_exclusive_group(required=True)
-    sc.add_argument('--queue', action='store', help='Queue name')
-    sc.add_argument('--topic', action='store', help='Topic name')
+    sc.add_argument('--queue', action='store', help=QUEUE_NAME)
+    sc.add_argument('--topic', action='store', help=TOPIC_NAME)
 
 
 def setup_queue_tools(sub_commands):
@@ -113,19 +126,14 @@ def setup_queue_tools(sub_commands):
     p.set_defaults(func=tool_queue)
     sc = p.add_mutually_exclusive_group(required=True)
 
-    sc.add_argument('--list', action='store',
-                    default=Output.TEXT, choices=Output.CHOICES)
-    sc.add_argument('--create', action='store', help='Create queue')
-    sc.add_argument('--clear-dead-leter', action='store',
+    sc.add_argument('--create', action='store',
+                    metavar='queue_name', help='Create queue')
+    sc.add_argument('--clear-dead-letter', action='store',
+                    metavar='queue_name',
                     help='Empty dead letter queue')
-
-    p.add_argument('--filter', action='store', default=None, required=False,
-                   help='Filter for select queue name. You can use * and ?')
 
 
 def setup_topic_tools(sub_commands):
     p: argparse.ArgumentParser = sub_commands.add_parser('topic')
     p.set_defaults(func=tool_topic)
-    sc = p.add_mutually_exclusive_group(required=True)
-    sc.add_argument('--list', action='store_true')
-    sc.add_argument('--create', action='store_true')
+    p.add_argument('--create', action='store_true')
