@@ -1,6 +1,6 @@
 # sbcli-furlan
 
-Azure Service Bus CLI - v0.0.2
+Azure Service Bus CLI - v0.0.3
 
 [![Python application](https://github.com/guionardo/py-servicebus-cli/actions/workflows/python-app.yml/badge.svg)](https://github.com/guionardo/py-servicebus-cli/actions/workflows/python-app.yml)
 [![Upload Python Package](https://github.com/guionardo/py-servicebus-cli/actions/workflows/python-publish.yml/badge.svg)](https://github.com/guionardo/py-servicebus-cli/actions/workflows/python-publish.yml)
