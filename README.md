@@ -18,6 +18,7 @@ Azure Service Bus CLI - v0.0.5
     - [TOPIC](#topic)
     - [DOWNLOAD](#download)
     - [UPLOAD](#upload)
+  - [ToDo](#todo)
 
 ## Install
 
@@ -158,3 +159,12 @@ optional arguments:
   --topic TOPIC         Topic name
 ```
 
+
+## ToDo
+
+./src/cli/tool_topic.py:14:    # TODO: Implementar tool topic
+./src/cli/tool_peek.py:9:    # TODO: Implementar tool peek queue
+./src/cli/tool_peek.py:14:    # TODO: Implementar tool peek topic
+./src/cli/tool_queue.py:18:    # TODO: Implementar criação de fila
+./src/cli/tool_queue.py:23:    # TODO: Implementar limpeza de DLQ
+./src/cli/tool_download.py:64:    # TODO: Implementar download de tópicos
