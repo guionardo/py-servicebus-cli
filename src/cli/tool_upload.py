@@ -1,9 +1,11 @@
+
 import glob
 import logging
 import os
 from typing import List
 
 from azure.servicebus import ServiceBusClient, ServiceBusMessage
+from src.tools.files import get_files
 
 
 def tool_upload(args):
@@ -14,27 +16,21 @@ def tool_upload(args):
 
 
 def _tool_upload_queue(args):
-    files = _get_source(args.source)
     console = logging.getLogger('console')
+    files = get_files(args.source, args.max_count)
     if not files:
         console.info(
             'There are no files to upload at %s', args.source)
         return
-    max_files = len(files) if args.max_count <= 0 else args.max_count
-    files = [file for file in files if os.path.isfile(
-        file) and not os.path.isdir(file)][0:max_files]
+
     messages = []
     bulk_size = 10
-    sent_files = []
     sending_files = []
     console.info('Uploading files from %s to queue %s',
                  args.source, args.queue)
     with ServiceBusClient.from_connection_string(args.connection) as client:
         with client.get_queue_sender(args.queue) as sender:
             while files:
-                if len(sent_files) >= max_files:
-                    break
-
                 file = files.pop(0)
 
                 with open(file, 'br') as f:
@@ -69,13 +65,7 @@ def _tool_upload_queue(args):
 
 
 def _tool_upload_topic(args):
-    pass
-
-
-def _get_source(source: str) -> List[str]:
-    if os.path.isdir(source):
-        source = os.path.join(source, '*')
-    return glob.glob(source)
+    raise NotImplementedError("tool_upload_topic")
 
 
 def _move_files(files: List[str], sub_folder: str):

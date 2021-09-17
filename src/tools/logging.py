@@ -8,6 +8,7 @@ from src import __tool_name__
 _SETUP_DONE = False
 _LOGGER = None
 _FORMAT = '%(asctime)-15s %(name)-5s %(levelname)-8s %(message)s'
+_BASIC_FORMAT = '%(message)s'
 
 
 def setup_logging(no_logging: bool, debug: bool):
@@ -30,7 +31,7 @@ def setup_logging(no_logging: bool, debug: bool):
                                                  interval=1, backupCount=7))
 
     console_handler = logging.StreamHandler()
-    console_handler.setFormatter(logging.Formatter('%(message)s'))
+    console_handler.setFormatter(logging.Formatter(_BASIC_FORMAT))
 
     if handlers:
         logging.basicConfig(format=_FORMAT,
@@ -39,7 +40,7 @@ def setup_logging(no_logging: bool, debug: bool):
         logging.getLogger(__name__).info('INIT')
         logging.getLogger('console').addHandler(console_handler)
     else:
-        logging.basicConfig(format='%(message)s', handlers=[
+        logging.basicConfig(format=_BASIC_FORMAT, handlers=[
                             console_handler], level=logging.INFO)
 
     _SETUP_DONE = True

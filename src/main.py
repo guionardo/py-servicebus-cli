@@ -13,5 +13,7 @@ def main():
 
         if hasattr(args, 'func'):
             args.func(args)
+    except NotImplementedError as exc:
+        logging.getLogger('console').error('Not implemented: %s', exc)
     except Exception as exc:
         logging.getLogger('console').error('Error: %s', exc)
