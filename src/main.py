@@ -13,5 +13,7 @@ def main():
             args.func(args)
     except NotImplementedError as exc:
         get_console().error('Not implemented: %s', exc)
+        get_console().info(
+            'Check or open a issue: https://github.com/guionardo/py-servicebus-cli/issues')
     except Exception as exc:
         get_console().error('Error: %s', exc)
