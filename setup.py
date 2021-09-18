@@ -71,7 +71,8 @@ setup(
     },
     install_requires=[
         "azure-servicebus",
-        "xmltodict"
+        "xmltodict",
+        "cryptography"
     ],
     zip_safe=True,
     python_requires='>=3.8.*'
