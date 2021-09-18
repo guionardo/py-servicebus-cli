@@ -5,7 +5,7 @@ import os
 import ssl
 import urllib.request
 
-from src import __package_name__, __version__, __description__
+from src import __description__, __package_name__, __version__
 from src.tools.version import Version
 
 
@@ -112,6 +112,50 @@ class PyPiInfoFile:
             return
         if not self.update():
             return
+
+    def get_pypi_data(self) -> dict:
+        url = f'https://pypi.org/pypi/{__package_name__}/json'
+        try:
+            gcontext = ssl.SSLContext()
+            req = urllib.request.Request(
+                url, headers={'Accept': 'application/json'})
+
+            conn = urllib.request.urlopen(req, context=gcontext)
+            if 199 < conn.status < 400:
+                return json.loads(conn.read())
+            self.log.warning('PyPi package request failed: %s %s',
+                             conn.status, conn.msg)
+
+        except Exception as exc:
+            self.log.error('PyPi package request exception: %s', exc)
+
+        return {}
+
+
+class PyPiVersion:
+
+    def __init__(self):
+        self.pipy_version = Version()
+        self.log = logging.getLogger(__name__)
+
+    def fetch(self) -> bool:
+        data = self.get_pypi_data()
+        info = data.get('info', {})
+        if not info:
+            self.log.warning('Request data failed - missing "info" field')
+            return False
+        downloads = info.get('downloads', {})
+        if not downloads:
+            self.log.warning(
+                'Request data failed - missing "info.downloads" field')
+            return False
+        version = info.get('version', '')
+        if not version:
+            self.log.warning(
+                'Request data failed - missing "info.version" field')
+            return False
+        self.pipy_version = Version(version)
+        return True
 
     def get_pypi_data(self) -> dict:
         url = f'https://pypi.org/pypi/{__package_name__}/json'

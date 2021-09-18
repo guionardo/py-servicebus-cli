@@ -1,0 +1,15 @@
+{
+    "key": "b68<8IB|MMcSBe>NM>+HW@Jf5GH^&(L_uOqQaNN+I89VnOLa6wRboLs",
+    "profiles": {
+        "default": "prod",
+        "items": {
+            "default": "XF)+hK|w-jQfE(Bb#^&&SZ_*qc3CYqQBY@hNo;jCZfZAcGdWmeHZ4YDQZ0H&OHordb7yTyaAa^}b$ByQa70)!Zgf?4F+)*jXi7&!LrY>!L}hhnZC`atbyHzea&kj5Hb^#NOG8#LGD&Dja!gigP-aOz",
+            "prod": "XF)+hK|w-jQfE(BSV%=_O-nOlMrA@-OL|s0RCO^)Sz1dsR&hBpOnEtJaA|c<SU5ykNI_UoT1HP{MoVT@LuE`^Qc_P!OIk#1dRJ&=baqL3a5Y6UWNd6vRYzk`VMJDIRZCSdVOC>OSTlEJbx(0@W^Z>r"
+        }
+    },
+    "version": {
+        "last_download": 1631978390,
+        "current_version": "v0.0.5",
+        "pypi_version": "v0.0.5"
+    }
+}
