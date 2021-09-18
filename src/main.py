@@ -10,7 +10,7 @@ def main():
         get_console().debug('Args: %s', args)
 
         if hasattr(args, 'func'):
-            args.func(args)
+            args.func(args, parser)
     except NotImplementedError as exc:
         get_console().error('Not implemented: %s', exc)
         get_console().info(

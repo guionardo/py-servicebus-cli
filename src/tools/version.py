@@ -10,6 +10,8 @@ class Version:
         self.major = 0
         self.minor = 0
         self.feature = 0
+        version = ''.join(
+            [c for c in str(version) if '0' <= c <= '9' or c == '.'])
         n = version.split('.')
         n.extend(['0', '0', '0'])
 

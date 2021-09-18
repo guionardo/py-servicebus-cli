@@ -1,5 +1,6 @@
 import argparse
 import os
+from sys import argv
 
 from src import __description__, __tool_name__, __version__
 from src.cli.tool_download import tool_download
@@ -11,6 +12,7 @@ from src.cli.tool_upload import tool_upload
 from src.tools.logging import get_log_file
 from src.tools.output import Output
 from src.tools.pypi import PyPiInfoFile
+from src.cli.tools.profiles import setup_profile_tools
 
 SB_CONNECTION_STRING = 'SB_CONNECTION_STRING'
 QUEUE_NAME = 'Queue name'
@@ -31,9 +33,12 @@ def setup_cli() -> argparse.ArgumentParser:
 
     parser.add_argument('--version', action='version',
                         version=f'%(prog)s {__version__}')
-    parser.add_argument('--connection', required=not bool(
-        connection_string), action='store', default=connection_string,
-        help=f"Service bus connection string (env {SB_CONNECTION_STRING})")
+
+    need_connection = ('profile' not in argv) and not bool(connection_string)
+
+    parser.add_argument('--connection', required=need_connection,
+                        action='store', default=connection_string,
+                        help=f"Service bus connection string (env {SB_CONNECTION_STRING})")
     parser.add_argument('--no-logging', required=False,
                         action='store_true', default=False)
     parser.add_argument('--debug', action='store_true',
@@ -47,6 +52,7 @@ def setup_cli() -> argparse.ArgumentParser:
     setup_topic_tools(sub_commands)
     setup_download_tools(sub_commands)
     setup_upload_tools(sub_commands)
+    setup_profile_tools(sub_commands)
 
     return parser
 
