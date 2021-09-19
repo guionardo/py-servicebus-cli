@@ -6,6 +6,8 @@ from typing import Union
 from src.config.store import ConfigStore
 
 SB_CONNECTION_STRING = 'SB_CONNECTION_STRING'
+QUEUE_NAME = 'Queue name'
+TOPIC_NAME = 'Topic name'
 
 
 def parse_conection_profile(args: argparse.Namespace,

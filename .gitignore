@@ -130,5 +130,6 @@ dmypy.json
 
 .vscode
 .sonarlint
-monitoring
-sales_lab_channel_tmp
+
+# Message samples and tests
+samples
