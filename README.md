@@ -158,7 +158,9 @@ optional arguments:
 
 ## ToDo
 
+```
 ./src/cli/tool_topic.py:14:    # TODO: Implementar tool topic
 ./src/cli/tool_queue.py:18:    # TODO: Implementar criação de fila
 ./src/cli/tool_queue.py:23:    # TODO: Implementar limpeza de DLQ
 ./src/cli/tools/download.py:151:    # TODO: Implementar download de tópicos
+```
