@@ -4,17 +4,16 @@ from sys import argv
 
 from src import __description__, __tool_name__, __version__
 from src.cli.tool_download import tool_download
-from src.cli.tool_list import tool_list
 from src.cli.tool_peek import tool_peek
 from src.cli.tool_queue import tool_queue
 from src.cli.tool_topic import tool_topic
 from src.cli.tool_upload import tool_upload
-from src.tools.logging import get_log_file
-from src.tools.output import Output
-from src.tools.pypi import PyPiInfoFile
+from src.cli.tools import SB_CONNECTION_STRING
+from src.cli.tools.list import setup_list_tools
 from src.cli.tools.profiles import setup_profile_tools
+from src.tools.logging import get_log_file
+from src.tools.pypi import PyPiInfoFile
 
-SB_CONNECTION_STRING = 'SB_CONNECTION_STRING'
 QUEUE_NAME = 'Queue name'
 TOPIC_NAME = 'Topic name'
 
@@ -36,9 +35,18 @@ def setup_cli() -> argparse.ArgumentParser:
 
     need_connection = ('profile' not in argv) and not bool(connection_string)
 
-    parser.add_argument('--connection', required=need_connection,
-                        action='store', default=connection_string,
-                        help=f"Service bus connection string (env {SB_CONNECTION_STRING})")
+    # if need_connection:
+
+    cs = parser.add_mutually_exclusive_group(required=need_connection)
+    cs.add_argument('--connection', required=need_connection,
+                    action='store', default=connection_string,
+                    help=f"Service bus connection string (env {SB_CONNECTION_STRING})")
+    cs.add_argument('--profile', required=need_connection,
+                    action='store', help='Connection profile')
+
+    # parser.add_argument('--connection', required=need_connection,
+    #                     action='store', default=connection_string,
+    #                     help=f"Service bus connection string (env {SB_CONNECTION_STRING})")
     parser.add_argument('--no-logging', required=False,
                         action='store_true', default=False)
     parser.add_argument('--debug', action='store_true',
@@ -55,19 +63,6 @@ def setup_cli() -> argparse.ArgumentParser:
     setup_profile_tools(sub_commands)
 
     return parser
-
-
-def setup_list_tools(sub_commands):
-    p: argparse.ArgumentParser = sub_commands.add_parser(
-        'list', help='List entities')
-    p.set_defaults(func=tool_list)
-    sc = p.add_mutually_exclusive_group(required=True)
-    sc.add_argument('--queue', action='store',
-                    help="Queue name (allow mask * and ?)")
-    sc.add_argument('--topic', action='store',
-                    help='Topic name (allow mask * and ?)')
-    p.add_argument('--type', action='store',
-                   default=Output.TEXT, choices=Output.CHOICES)
 
 
 def setup_peek_tools(sub_commands):
