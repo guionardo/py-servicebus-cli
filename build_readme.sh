@@ -125,7 +125,6 @@ rm toc.txt
 echo "+- Lista de TO-DO"
 todo=$(mktemp -p /tmp todo.XXX)
 
-#TODO Quebrar as linhas do comando abaixo
 grep --exclude-dir=.git -rEIn --exclude=build_readme.sh "TODO|FIXME" . >$todo
 awk 'NR==FNR { a[n++]=$0; next} /_todo_/ { for (i=0;i<n;++i) print a[i]; next }1' $todo $README >docs/template.tmp0 && mv docs/template.tmp0 $README
 rm $todo
