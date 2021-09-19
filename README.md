@@ -18,6 +18,7 @@ Azure Service Bus CLI - v0.0.5
     - [TOPIC](#topic)
     - [DOWNLOAD](#download)
     - [UPLOAD](#upload)
+    - [PROFILE](#profile)
   - [ToDo](#todo)
 
 ## Install
@@ -32,17 +33,18 @@ pip install sbcli-furlan
 $ sbcli --help
 usage: sbcli [-h] [--version] [--connection CONNECTION] [--no-logging]
              [--debug]
-             {list,peek,queue,topic,download,upload} ...
+             {list,peek,queue,topic,download,upload,profile} ...
 
 Azure Service Bus CLI
 
 positional arguments:
-  {list,peek,queue,topic,download,upload}
+  {list,peek,queue,topic,download,upload,profile}
     list                List entities
     peek                Peek message
     queue               Queue management
     download            Download message
     upload              Upload message
+    profile             Connection profiles
 
 optional arguments:
   -h, --help            show this help message and exit
@@ -157,6 +159,26 @@ optional arguments:
                         Maximum message count
   --queue QUEUE         Queue name
   --topic TOPIC         Topic name
+```
+
+### PROFILE
+
+``` bash
+$ sbcli profile --help
+usage: sbcli profile [-h]
+                     (--set PROFILE | --delete PROFILE | --list | --default PROFILE)
+                     [--connection CONNECTION] [--output {text,csv,table}]
+
+optional arguments:
+  -h, --help            show this help message and exit
+  --set PROFILE         Set profile and connection string (add --connection
+                        argument)
+  --delete PROFILE      Delete profile
+  --list                List profiles
+  --default PROFILE     Set default profile
+  --connection CONNECTION
+                        Connection string (used with --set)
+  --output {text,csv,table}
 ```
 
 

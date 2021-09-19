@@ -16,12 +16,12 @@ class TestConfigStore(unittest.TestCase):
 
         return super().setUpClass()
 
-    # @classmethod
-    # def tearDownClass(cls) -> None:
-    #     if os.path.isfile(cls.CONFIG_FILE_NAME):
-    #         os.unlink(cls.CONFIG_FILE_NAME)
+    @classmethod
+    def tearDownClass(cls) -> None:
+        if os.path.isfile(cls.CONFIG_FILE_NAME):
+            os.unlink(cls.CONFIG_FILE_NAME)
 
-    #     return super().tearDownClass()
+        return super().tearDownClass()
 
     def test_store(self):
         store = ConfigStore(self.CONFIG_FILE_NAME)
