@@ -13,7 +13,6 @@ Azure Service Bus CLI - v0.0.5
   - [Install](#install)
   - [Help](#help)
     - [LIST](#list)
-    - [PEEK](#peek)
     - [QUEUE](#queue)
     - [TOPIC](#topic)
     - [DOWNLOAD](#download)
@@ -31,16 +30,15 @@ pip install sbcli-furlan
 
 ``` bash
 $ sbcli --help
-usage: sbcli [-h] [--version] [--connection CONNECTION] [--no-logging]
-             [--debug]
-             {list,peek,queue,topic,download,upload,profile} ...
+usage: sbcli [-h] [--version] [--connection CONNECTION | --profile PROFILE]
+             [--no-logging] [--debug]
+             {list,queue,topic,download,upload,profile} ...
 
 Azure Service Bus CLI
 
 positional arguments:
-  {list,peek,queue,topic,download,upload,profile}
+  {list,queue,topic,download,upload,profile}
     list                List entities
-    peek                Peek message
     queue               Queue management
     download            Download message
     upload              Upload message
@@ -52,10 +50,11 @@ optional arguments:
   --connection CONNECTION
                         Service bus connection string (env
                         SB_CONNECTION_STRING)
+  --profile PROFILE     Connection profile
   --no-logging
   --debug               Set debug level to log
 
-You are using a version ahead (v0.0.5) of pypi (v0.0.3). Log file:
+You are using the latest version v0.0.5. Log file:
 /home/guionardo/.log/sbcli.log
 ```
 
@@ -71,30 +70,6 @@ optional arguments:
   --queue QUEUE         Queue name (allow mask * and ?)
   --topic TOPIC         Topic name (allow mask * and ?)
   --type {text,csv,table}
-```
-
-### PEEK
-
-``` bash
-$ sbcli peek --help
-usage: sbcli peek [-h] [--output OUTPUT] [--file-prefix FILE_PREFIX]
-                  [--dead-letter] [--timeout TIMEOUT]
-                  (--queue QUEUE | --topic TOPIC)
-                  [--max-count MAX_COUNT | --all]
-
-optional arguments:
-  -h, --help            show this help message and exit
-  --output OUTPUT, -o OUTPUT
-                        Output folder (default = queue/topic name)
-  --file-prefix FILE_PREFIX
-                        Fileprefix
-  --dead-letter         Dead letter queue
-  --timeout TIMEOUT     Timeout in seconds
-  --queue QUEUE         Queue name
-  --topic TOPIC         Topic name
-  --max-count MAX_COUNT
-                        Maximum message count
-  --all                 Download all messages
 ```
 
 ### QUEUE
@@ -126,9 +101,8 @@ optional arguments:
 ``` bash
 $ sbcli download --help
 usage: sbcli download [-h] [--output OUTPUT] [--file-prefix FILE_PREFIX]
-                      [--dead-letter] [--timeout TIMEOUT]
-                      (--queue QUEUE | --topic TOPIC)
-                      [--max-count MAX_COUNT | --all]
+                      [--dead-letter] [--timeout TIMEOUT] [--peek]
+                      (--queue QUEUE | --topic TOPIC) [--max-count MAX_COUNT]
 
 optional arguments:
   -h, --help            show this help message and exit
@@ -138,11 +112,11 @@ optional arguments:
                         Fileprefix
   --dead-letter         Dead letter queue
   --timeout TIMEOUT     Timeout in seconds
+  --peek                Peek (does not complete message in queue)
   --queue QUEUE         Queue name
   --topic TOPIC         Topic name
   --max-count MAX_COUNT
                         Maximum message count
-  --all                 Download all messages
 ```
 
 ### UPLOAD
@@ -185,8 +159,6 @@ optional arguments:
 ## ToDo
 
 ./src/cli/tool_topic.py:14:    # TODO: Implementar tool topic
-./src/cli/tool_peek.py:9:    # TODO: Implementar tool peek queue
-./src/cli/tool_peek.py:14:    # TODO: Implementar tool peek topic
 ./src/cli/tool_queue.py:18:    # TODO: Implementar criação de fila
 ./src/cli/tool_queue.py:23:    # TODO: Implementar limpeza de DLQ
-./src/cli/tool_download.py:64:    # TODO: Implementar download de tópicos
+./src/cli/tools/download.py:151:    # TODO: Implementar download de tópicos

@@ -3,26 +3,24 @@ import os
 from sys import argv
 
 from src import __description__, __tool_name__, __version__
-from src.cli.tool_download import tool_download
-from src.cli.tool_peek import tool_peek
 from src.cli.tool_queue import tool_queue
 from src.cli.tool_topic import tool_topic
 from src.cli.tool_upload import tool_upload
-from src.cli.tools import SB_CONNECTION_STRING
+from src.cli.tools import QUEUE_NAME, SB_CONNECTION_STRING, TOPIC_NAME
+from src.cli.tools.download import setup_download_tools
 from src.cli.tools.list import setup_list_tools
 from src.cli.tools.profiles import setup_profile_tools
+from src.config.store import ConfigStore
 from src.tools.logging import get_log_file
-from src.tools.pypi import PyPiInfoFile
-
-QUEUE_NAME = 'Queue name'
-TOPIC_NAME = 'Topic name'
 
 
 def setup_cli() -> argparse.ArgumentParser:
     log_file = get_log_file()
-    pypi = PyPiInfoFile()
+    config = ConfigStore()
+    config.version.check_pypi_version()
+
     epilog = [
-        pypi.update_message(),
+        config.version.update_message,
         'Log file: {0}'.format('disabled' if not log_file else log_file),
     ]
     parser = argparse.ArgumentParser(prog=__tool_name__,
@@ -40,7 +38,8 @@ def setup_cli() -> argparse.ArgumentParser:
     cs = parser.add_mutually_exclusive_group(required=need_connection)
     cs.add_argument('--connection', required=need_connection,
                     action='store', default=connection_string,
-                    help=f"Service bus connection string (env {SB_CONNECTION_STRING})")
+                    help="Service bus connection string " +
+                    f"(env {SB_CONNECTION_STRING})")
     cs.add_argument('--profile', required=need_connection,
                     action='store', help='Connection profile')
 
@@ -55,7 +54,7 @@ def setup_cli() -> argparse.ArgumentParser:
     sub_commands = parser.add_subparsers()
 
     setup_list_tools(sub_commands)
-    setup_peek_tools(sub_commands)
+
     setup_queue_tools(sub_commands)
     setup_topic_tools(sub_commands)
     setup_download_tools(sub_commands)
@@ -63,48 +62,6 @@ def setup_cli() -> argparse.ArgumentParser:
     setup_profile_tools(sub_commands)
 
     return parser
-
-
-def setup_peek_tools(sub_commands):
-    p: argparse.ArgumentParser = sub_commands.add_parser(
-        'peek', help='Peek message')
-    p.set_defaults(func=tool_peek)
-    p.add_argument('--output', '-o', action='store',
-                   help='Output folder (default = queue/topic name)')
-    p.add_argument('--file-prefix', action='store', help='Fileprefix')
-    p.add_argument('--dead-letter', action='store_true',
-                   help='Dead letter queue')
-    p.add_argument('--timeout', action='store', type=int,
-                   default=30, help='Timeout in seconds')
-    sc = p.add_mutually_exclusive_group(required=True)
-    sc.add_argument('--queue', action='store', help=QUEUE_NAME)
-    sc.add_argument('--topic', action='store', help=TOPIC_NAME)
-
-    sq = p.add_mutually_exclusive_group(required=False)
-    sq.add_argument('--max-count', action='store', type=int,
-                    default=0, help='Maximum message count')
-    sq.add_argument('--all', action='store_true', help='Download all messages')
-
-
-def setup_download_tools(sub_commands):
-    p: argparse.ArgumentParser = sub_commands.add_parser(
-        'download', help='Download message')
-    p.set_defaults(func=tool_download)
-    p.add_argument('--output', '-o', action='store',
-                   help='Output folder (default = queue/topic name)')
-    p.add_argument('--file-prefix', action='store', help='Fileprefix')
-    p.add_argument('--dead-letter', action='store_true',
-                   help='Dead letter queue')
-    p.add_argument('--timeout', action='store', type=int,
-                   default=30, help='Timeout in seconds')
-    sc = p.add_mutually_exclusive_group(required=True)
-    sc.add_argument('--queue', action='store', help=QUEUE_NAME)
-    sc.add_argument('--topic', action='store', help=TOPIC_NAME)
-
-    sq = p.add_mutually_exclusive_group(required=False)
-    sq.add_argument('--max-count', action='store', type=int,
-                    default=0, help='Maximum message count')
-    sq.add_argument('--all', action='store_true', help='Download all messages')
 
 
 def setup_upload_tools(sub_comands):
