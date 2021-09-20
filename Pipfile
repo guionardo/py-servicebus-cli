@@ -16,6 +16,7 @@ wheel = "*"
 azure-servicebus = "*"
 xmltodict = "*"
 pyyaml = "*"
+tqdm = "*"
 
 [requires]
 python_version = "3.8"

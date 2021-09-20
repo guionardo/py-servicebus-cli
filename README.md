@@ -36,14 +36,6 @@ usage: sbcli [-h] [--version] [--connection CONNECTION | --profile PROFILE]
 
 Azure Service Bus CLI
 
-positional arguments:
-  {list,queue,topic,download,upload,profile}
-    list                List entities
-    queue               Queue management
-    download            Download message
-    upload              Upload message
-    profile             Connection profiles
-
 optional arguments:
   -h, --help            show this help message and exit
   --version             show program's version number and exit
@@ -53,6 +45,14 @@ optional arguments:
   --profile PROFILE     Connection profile
   --no-logging
   --debug               Set debug level to log
+
+actions:
+  {list,queue,topic,download,upload,profile}
+    list                List entities
+    queue               Queue management
+    download            Download message
+    upload              Upload message
+    profile             Connection profiles
 
 You are using a version ahead (v0.0.6) of pypi (v0.0.5). Log file:
 /home/guionardo/.log/sbcli.log
@@ -76,13 +76,15 @@ optional arguments:
 
 ``` bash
 $ sbcli queue --help
-usage: sbcli queue [-h] (--create queue_name | --clear-dead-letter queue_name)
+usage: sbcli queue [-h]
+                   (--create queue_name | --clear-dead-letter queue_name | --delete queue_name)
 
 optional arguments:
   -h, --help            show this help message and exit
   --create queue_name   Create queue
   --clear-dead-letter queue_name
                         Empty dead letter queue
+  --delete queue_name   Delete queue
 ```
 
 ### TOPIC
@@ -163,7 +165,5 @@ optional arguments:
 
 ```
 ./src/cli/tool_topic.py:14:    # TODO: Implementar tool topic
-./src/cli/tool_queue.py:18:    # TODO: Implementar criação de fila
-./src/cli/tool_queue.py:23:    # TODO: Implementar limpeza de DLQ
 ./src/cli/tools/download.py:151:    # TODO: Implementar download de tópicos
 ```
