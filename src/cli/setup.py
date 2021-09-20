@@ -5,11 +5,11 @@ from sys import argv
 from src import __description__, __tool_name__, __version__
 from src.cli.tool_queue import tool_queue
 from src.cli.tool_topic import tool_topic
-from src.cli.tool_upload import tool_upload
-from src.cli.tools import QUEUE_NAME, SB_CONNECTION_STRING, TOPIC_NAME
+from src.cli.tools import SB_CONNECTION_STRING
 from src.cli.tools.download import setup_download_tools
 from src.cli.tools.list import setup_list_tools
 from src.cli.tools.profiles import setup_profile_tools
+from src.cli.tools.upload import setup_upload_tools
 from src.config.store import ConfigStore
 from src.tools.logging import get_log_file
 
@@ -62,19 +62,6 @@ def setup_cli() -> argparse.ArgumentParser:
     setup_profile_tools(sub_commands)
 
     return parser
-
-
-def setup_upload_tools(sub_comands):
-    p: argparse.ArgumentParser = sub_comands.add_parser(
-        'upload', help='Upload message')
-    p.set_defaults(func=tool_upload)
-    p.add_argument('--source', action='store',
-                   help='Source files (you can use mask)', required=True)
-    p.add_argument('--max-count', action='store', type=int,
-                   default=0, help='Maximum message count')
-    sc = p.add_mutually_exclusive_group(required=True)
-    sc.add_argument('--queue', action='store', help=QUEUE_NAME)
-    sc.add_argument('--topic', action='store', help=TOPIC_NAME)
 
 
 def setup_queue_tools(sub_commands):

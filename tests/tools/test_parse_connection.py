@@ -59,6 +59,7 @@ class TestParseConnection(unittest.TestCase):
 
     def test_connection_unknown(self):
         config = ConfigStore('.tmp')
+        os.environ.update({SB_CONNECTION_STRING: ""})
         args = argparse.Namespace(connection=None, profile=None)
         _, err = parse_conection_profile(args, config)
         self.assertIsNotNone(err)

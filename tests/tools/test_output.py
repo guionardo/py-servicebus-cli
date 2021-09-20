@@ -26,8 +26,6 @@ class TestOutput(unittest.TestCase):
 
     def test_output_table(self):
         case = self.output.export(Output.TABLE)
-        print(case)
-
         self.assertEqual("""+---------+---+---------+
 |name     |age|address  |
 +---------+---+---------+

@@ -65,9 +65,11 @@ def get_console() -> logging.Logger:
 
 def reset_logging():
     global _LOGGER, _SETUP_DONE
-    logging.root.handlers.clear()
-    _LOGGER = None
-    _SETUP_DONE = False
+    try:
+        logging.root.handlers.clear()
+    finally:
+        _LOGGER = None
+        _SETUP_DONE = False
 
 
 def setup_done() -> bool:

@@ -125,6 +125,7 @@ optional arguments:
 $ sbcli upload --help
 usage: sbcli upload [-h] --source SOURCE [--max-count MAX_COUNT]
                     (--queue QUEUE | --topic TOPIC)
+                    [--no-move-sent | --move-sent FOLDER]
 
 optional arguments:
   -h, --help            show this help message and exit
@@ -133,6 +134,8 @@ optional arguments:
                         Maximum message count
   --queue QUEUE         Queue name
   --topic TOPIC         Topic name
+  --no-move-sent        No move sent files to ./sent folder
+  --move-sent FOLDER    Move to folder after sucessfull sending
 ```
 
 ### PROFILE
