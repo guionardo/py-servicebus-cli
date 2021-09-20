@@ -3,19 +3,9 @@ import sys
 
 from src.config.store import ConfigStore
 from src.tools.output import Output
+from src.tools.sb import ServiceBusConnectionString
 
 FAILED_TO_SAVE = 'Failed to save configuration file'
-
-
-class ProfileAction(argparse.Action):
-
-    def __call__(self, parser: argparse.ArgumentParser, namespace,
-                 values: str, option_string=None) -> None:
-        if len(namespace.set) < 2:
-            parser.error('expected <profile_name> <connection_string> values')
-
-        return super().__call__(parser, namespace, values,
-                                option_string=option_string)
 
 
 def setup_profile_tools(sub_commands):
@@ -23,8 +13,7 @@ def setup_profile_tools(sub_commands):
         'profile', help='Connection profiles')
     p.set_defaults(func=tool_profile)
     sc = p.add_mutually_exclusive_group(required=True)
-    # sc.add_argument('--set', nargs=2, dest='set', default=[],
-    #                 action=ProfileAction, required=True, help='')
+
     sc.add_argument('--set', action='store', metavar='PROFILE',
                     help='Set profile and connection string (add --connection argument)')
     sc.add_argument('--delete', action='store', metavar='PROFILE',
@@ -59,6 +48,11 @@ def tool_profile(args: argparse.Namespace,
 def _tool_profile_set(args: argparse.Namespace,
                       parser: argparse.ArgumentParser,
                       config: ConfigStore):
+    try:
+        ServiceBusConnectionString(args.connection)
+    except Exception as exc:
+        parser.exit(1, str(exc))
+
     config.profiles[args.set] = args.connection
     if not config.save():
         parser.exit(1, FAILED_TO_SAVE)
@@ -85,9 +79,10 @@ def _tool_profile_delete(args: argparse.Namespace,
 def _tool_profile_list(args: argparse.Namespace,
                        parser: argparse.ArgumentParser,
                        config: ConfigStore):
-    output = Output('profile')
+    output = Output('profile', 'endpoint')
     for profile in config.profiles:
-        output.add(profile)
+        sb_cs = ServiceBusConnectionString(config.profiles[profile])
+        output.add(profile, sb_cs.endpoint)
 
     parser.exit(0, output.export(args.output))
 
