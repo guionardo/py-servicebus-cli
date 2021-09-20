@@ -35,3 +35,15 @@ def to_snake_case(s: str) -> str:
             r += '_'
         r += c.lower()
     return r
+
+
+def validate_queue_name(queue_name: str, allow_mask: bool) -> bool:
+    valid_chars = [chr(n) for n in range(ord('a'), ord('z')+1)] +\
+        [chr(n) for n in range(ord('0'), ord('9')+1)] +\
+        ['_']
+    if allow_mask:
+        valid_chars += ['*', '?']
+    for c in queue_name:
+        if c not in valid_chars:
+            return False
+    return True

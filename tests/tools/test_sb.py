@@ -1,6 +1,6 @@
 import unittest
 
-from src.tools.sb import ServiceBusConnectionString, to_snake_case
+from src.tools.sb import ServiceBusConnectionString, to_snake_case, validate_queue_name
 
 
 class TestServiceBusCS(unittest.TestCase):
@@ -32,3 +32,8 @@ class TestServiceBusCS(unittest.TestCase):
         sb = ServiceBusConnectionString(connection_string)
         self.assertEqual('Endpoint=sb://testing.servicebus.windows.net/;' +
                          "SharedAccessKeyName=testing_key;SharedAccessKey=abcd", sb.to_string())
+
+    def test_validate_queue_name(self):
+        self.assertTrue(validate_queue_name('furlan_test', False))
+        self.assertFalse(validate_queue_name('any*', False))
+        self.assertTrue(validate_queue_name('furlan_*', True))
