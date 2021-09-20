@@ -64,7 +64,8 @@ class Output:
             ])
             for row in self._data:
                 f.write(
-                    '|'+'|'.join(pad(cell, self._col_width[n]) for n, cell in enumerate(row))+'|\n')
+                    '|'+'|'.join(pad(cell, self._col_width[n])
+                                 for n, cell in enumerate(row))+'|\n')
 
             f.writelines([
                 '+'+'+'.join(['-'*n for n in self._col_width])+'+\n'])
