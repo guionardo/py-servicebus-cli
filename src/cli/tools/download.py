@@ -3,15 +3,15 @@ import csv
 import json
 import os
 import sys
-from azure.servicebus._common.message import ServiceBusMessage, ServiceBusReceivedMessage
-from tqdm import tqdm
+
 import xmltodict
 from azure.servicebus import ServiceBusClient, ServiceBusSubQueue
-from azure.servicebus.management import ServiceBusAdministrationClient
-
-from src.cli.tools import QUEUE_NAME, TOPIC_NAME, parse_conection_profile
+from azure.servicebus._common.message import ServiceBusReceivedMessage
+from src.cli.tools import (QUEUE_NAME, TOPIC_NAME, parse_conection_profile,
+                           setup_connection_profile_args)
 from src.tools.logging import get_console
 from src.tools.service_bus.queue_info import QueueInfo
+from tqdm import tqdm
 
 
 def setup_download_tools(sub_commands):
@@ -36,6 +36,7 @@ def setup_download_tools(sub_commands):
                    default=0, help='Maximum message count')
     p.add_argument('--no-props', action='store_true', default=False,
                    help='Ignore creation of property file for each message')
+    setup_connection_profile_args(p)
 
 
 def tool_download(args: argparse.Namespace,
@@ -78,7 +79,8 @@ def _tool_download_queue(args: argparse.Namespace,
 
         with client.get_queue_receiver(
                 args.queue,
-                sub_queue=sub_queue) as receiver:
+                sub_queue=sub_queue,
+                prefetch_count=10) as receiver:
             with tqdm(total=progress_max_count,
                       desc='Receiving'+(' DLQ' if args.dead_letter else ''),
                       unit='msg') as pbar:
@@ -267,7 +269,7 @@ def _save_message_properties(message: ServiceBusReceivedMessage,
                              file_name: str):
     prop_file, _ = os.path.splitext(file_name)
     prop_file += '.props'
-    custom = message.application_properties
+    custom = message.application_properties or {}
 
     def validate_str(v):
         return v if not isinstance(v, bytes) else v.decode('ascii')

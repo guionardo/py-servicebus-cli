@@ -11,6 +11,8 @@ def main():
 
         if hasattr(args, 'func'):
             args.func(args, parser)
+        else:
+            parser.print_help()
     except NotImplementedError as exc:
         get_console().error('Not implemented: %s', exc)
         get_console().info(

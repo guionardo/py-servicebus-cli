@@ -3,7 +3,8 @@ import fnmatch
 import logging
 
 from azure.servicebus.management import ServiceBusAdministrationClient
-from src.cli.tools import parse_conection_profile
+from src.cli.tools import (parse_conection_profile,
+                           setup_connection_profile_args)
 from src.config.store import ConfigStore
 from src.tools.misc import remove_quotes
 from src.tools.output import Output
@@ -14,6 +15,7 @@ LOG = logging.getLogger(__name__)
 def setup_list_tools(sub_commands):
     p: argparse.ArgumentParser = sub_commands.add_parser(
         'list', help='List entities')
+
     p.set_defaults(func=tool_list)
     sc = p.add_mutually_exclusive_group(required=True)
     sc.add_argument('--queue', action='store',
@@ -22,10 +24,11 @@ def setup_list_tools(sub_commands):
                     help='Topic name (allow mask * and ?)')
     p.add_argument('--type', action='store',
                    default=Output.TEXT, choices=Output.CHOICES)
+    setup_connection_profile_args(p)
 
 
 def tool_list(args: argparse.Namespace,
-              parser: argparse.ArgumentParser = None):   
+              parser: argparse.ArgumentParser = None):
     config = ConfigStore()
     connection, err = parse_conection_profile(args, config)
     if err:
