@@ -3,11 +3,15 @@ import csv
 import json
 import os
 import sys
-
+from azure.servicebus._common.message import ServiceBusMessage, ServiceBusReceivedMessage
+from tqdm import tqdm
 import xmltodict
 from azure.servicebus import ServiceBusClient, ServiceBusSubQueue
+from azure.servicebus.management import ServiceBusAdministrationClient
+
 from src.cli.tools import QUEUE_NAME, TOPIC_NAME, parse_conection_profile
 from src.tools.logging import get_console
+from src.tools.service_bus.queue_info import QueueInfo
 
 
 def setup_download_tools(sub_commands):
@@ -30,6 +34,8 @@ def setup_download_tools(sub_commands):
     p.add_argument('--max-count', action='store', type=int,
                    required='--peek' in sys.argv,
                    default=0, help='Maximum message count')
+    p.add_argument('--no-props', action='store_true', default=False,
+                   help='Ignore creation of property file for each message')
 
 
 def tool_download(args: argparse.Namespace,
@@ -58,40 +64,66 @@ def _tool_download_queue(args: argparse.Namespace,
     file_prefix = args.file_prefix or ''
     get_console().info('Receiving from queue %s to folder %s',
                        args.queue, output)
+    progress_max_count = max_receive
+    if not progress_max_count:
+        queue_info = QueueInfo(connection, args.queue)
+        if args.dead_letter:
+            progress_max_count = queue_info.dead_letter_message_count
+        else:
+            progress_max_count = queue_info.active_message_count
+
+    downloaded = []
+    total_received = 0
     with ServiceBusClient.from_connection_string(connection) as client:
 
         with client.get_queue_receiver(
                 args.queue,
                 sub_queue=sub_queue) as receiver:
+            with tqdm(total=progress_max_count,
+                      desc='Receiving'+(' DLQ' if args.dead_letter else ''),
+                      unit='msg') as pbar:
 
-            count = 0
-            do_again = True
-            while do_again:
-                received = 0
-                for message in receiver.receive_messages(
-                        max_message_count=max_receive,
-                        max_wait_time=max_timeout):
-                    received += 1
-                    body = next(message.body)
-                    ext = _get_extension(body)
-                    file_name = os.path.join(
-                        output, "{0}{1}_{2}{3}".format(
-                            file_prefix,
-                            message.enqueued_time_utc.strftime(
-                                "%Y%m%d_%H%M%S"),
-                            message.message_id,
-                            ext))
-                    with open(file_name, 'bw') as f:
-                        f.write(body)
+                count = 0
+                do_again = True
+                while do_again:
+                    received = 0
+                    for message in receiver.receive_messages(
+                            max_message_count=max_receive,
+                            max_wait_time=max_timeout):
+                        received += 1
+                        total_received += 1
+                        body = next(message.body)
+                        ext = _get_extension(body)
+                        file_name = os.path.join(
+                            output, "{0}{1}_{2}{3}".format(
+                                file_prefix,
+                                message.enqueued_time_utc.strftime(
+                                    "%Y%m%d_%H%M%S"),
+                                message.message_id,
+                                ext))
 
-                    receiver.complete_message(message)
-                    get_console().info('Received #%s -> %s',
-                                       message.message_id, file_name)
+                        with open(file_name, 'bw') as f:
+                            f.write(body)
 
-                count += received
-                if received == 0 or (max_receive and count >= max_receive):
-                    do_again = False
-            get_console().info('Received %s messages', count)
+                        if not args.no_props:
+                            _save_message_properties(message, file_name)
+
+                        receiver.complete_message(message)
+                        if total_received > pbar.total:
+                            pbar.total = total_received
+                            pbar.refresh()
+                        pbar.update(1)
+                        downloaded.append((message.message_id, file_name))
+
+                    count += received
+                    if received == 0 or (max_receive and count >= max_receive):
+                        do_again = False
+
+    if not downloaded:
+        get_console().info('No messages received')
+    else:
+        for (message_id, file_name) in downloaded:
+            get_console().info('%s -> %s', message_id, file_name)
 
 
 def _tool_peek_queue(args: argparse.Namespace,
@@ -111,6 +143,7 @@ def _tool_peek_queue(args: argparse.Namespace,
     file_prefix = args.file_prefix or ''
     get_console().info('Peeking from queue %s to folder %s',
                        args.queue, output)
+
     with ServiceBusClient.from_connection_string(connection) as client:
 
         with client.get_queue_receiver(
@@ -179,22 +212,22 @@ def _get_extension(content: bytes, message_encoding='utf-8'):
             get_console().warning('Failed on decoding %s', encoding)
 
     if not str_content:
-        get_console().info('Assuming binary data')
+        # get_console().info('Assuming binary data')
         return '.bin'
 
     if _try_parse_json(str_content):
-        get_console().info('Detected JSON content')
+        # get_console().info('Detected JSON content')
         return '.json'
 
     if _try_parse_xml(str_content):
-        get_console().info('Detected XML content')
+        # get_console().info('Detected XML content')
         return '.xml'
 
     if _try_parse_csv(str_content):
-        get_console().info('Detected CSV content')
+        # get_console().info('Detected CSV content')
         return '.csv'
 
-    get_console().info('Detected TEXT content')
+    # get_console().info('Detected TEXT content')
     return '.txt'
 
 
@@ -228,3 +261,22 @@ def _try_parse_csv(content: str):
             return '.csv'
     except Exception:
         return None
+
+
+def _save_message_properties(message: ServiceBusReceivedMessage,
+                             file_name: str):
+    prop_file, _ = os.path.splitext(file_name)
+    prop_file += '.props'
+    custom = message.application_properties
+
+    def validate_str(v):
+        return v if not isinstance(v, bytes) else v.decode('ascii')
+    props = dict(
+        id=message.message_id,
+        content_type=message.content_type,
+        custom_properties={validate_str(key): validate_str(custom.get(key))
+                           for key in custom.keys()},
+        enqueued_time=message.enqueued_time_utc
+    )
+    with open(prop_file, 'w') as f:
+        f.write(json.dumps(props, default=str))
