@@ -11,13 +11,8 @@ def remove_quotes(s: str) -> str:
 
 def get_bulks(items: list, bulk_size: int) -> list:
     bulks = []
-    bulk = []
-    for item in items:
-        if len(bulk) < bulk_size:
-            bulk.append(item)
-            continue
-        bulks.append(bulk)
-        bulk.clear()
-    if len(bulk) > 0:
-        bulks.append(bulk)
+    _items = items.copy()
+    while _items:
+        bulks.append(_items[0:bulk_size].copy())
+        _items = _items[bulk_size:]
     return bulks

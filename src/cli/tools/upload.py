@@ -4,10 +4,12 @@ import os
 from typing import List
 
 from azure.servicebus import ServiceBusClient, ServiceBusMessage
-from src.cli.tools import QUEUE_NAME, TOPIC_NAME, parse_conection_profile
+from src.cli.tools import (QUEUE_NAME, TOPIC_NAME, parse_conection_profile,
+                           setup_connection_profile_args)
 from src.tools.files import get_files
 from src.tools.logging import get_console
 from src.tools.misc import get_bulks
+from tqdm import tqdm
 
 MAX_FILE_SIZE = 256*1024    # Service Bus maximum message size
 BULK_SIZE = 10
@@ -31,6 +33,7 @@ def setup_upload_tools(sub_comands):
     sm.add_argument('--move-sent', action='store',
                     default='{source}/sent', metavar='FOLDER',
                     help='Move to folder after sucessfull sending')
+    setup_connection_profile_args(p)
 
 
 def tool_upload(args: argparse.Namespace,
@@ -69,24 +72,33 @@ def _tool_upload_queue(args: argparse.Namespace,
     if not bulks:
         parser.exit(1, f'There are no viable files to upload at {args.source}')
 
+    sent_files = []
     with ServiceBusClient.from_connection_string(connection) as client:
         with client.get_queue_sender(args.queue) as sender:
-            for bulk in bulks:
-                for file in bulk:
-                    with open(file, 'br') as f:
-                        raw_message = ServiceBusMessage(f.read())
-                    messages.append(raw_message)
-                    sending_files.append(file)
-                try:
-                    sender.send_messages(messages)
-                    messages.clear()
-                    get_console().info(
-                        'Sent %s', [os.path.basename(f)
-                                    for f in sending_files])
-                    _move_files(sending_files, args)
-                    sending_files.clear()
-                except Exception as exc:
-                    parser.exit(1, f'Failed to send messages: {exc}')
+            with tqdm(total=len(viable_files),
+                      desc='Uploading',
+                      unit='msg') as pbar:
+                for bulk in bulks:
+                    for file in bulk:
+                        with open(file, 'br') as f:
+                            raw_message = ServiceBusMessage(f.read())
+                        messages.append(raw_message)
+                        sending_files.append(file)
+                    try:
+                        sender.send_messages(messages)
+                        pbar.update(len(messages))
+                        messages.clear()
+                        _move_files(sending_files, args)
+                        sent_files.extend(sending_files)
+                        sending_files.clear()
+                    except Exception as exc:
+                        parser.exit(1, f'Failed to send messages: {exc}')
+    if not sent_files:
+        get_console().info('No files was sent')
+    else:
+        get_console().info(
+            'Sent %s', [os.path.basename(f)
+                        for f in sent_files])
 
 
 def _tool_upload_topic(args: argparse.Namespace,
@@ -101,11 +113,11 @@ def _tool_upload_topic(args: argparse.Namespace,
 def _move_files(files: List[str], args: argparse.Namespace):
     log = logging.getLogger(__name__)
     if not files:
-        log.info('No files to move')
+        # log.info('No files to move')
         return
 
     if args.no_move_sent:
-        log.info('Not moving files due --no-move-sent argument')
+        # log.info('Not moving files due --no-move-sent argument')
         return
 
     move_sent_folder = args.move_sent
@@ -122,11 +134,12 @@ def _move_files(files: List[str], args: argparse.Namespace):
             new_file = os.path.join(move_sent_folder, os.path.basename(file))
             os.rename(file, new_file)
             con_log.append(os.path.basename(file))
-            log.info('MOVED: %s -> %s', file, new_file)
+            # log.info('MOVED: %s -> %s', file, new_file)
     except Exception as exc:
         log.error('Exception when moving files: %s', exc)
     finally:
-        get_console().info('Moved files %s/ %s -> %s',
-                           origin_folder, con_log, move_sent_folder)
+        pass
+        # get_console().info('Moved files %s/ %s -> %s',
+        #                    origin_folder, con_log, move_sent_folder)
     if exc:
         raise exc

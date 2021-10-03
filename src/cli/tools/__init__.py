@@ -1,6 +1,7 @@
 import argparse
 import logging
 import os
+import sys
 from typing import Union
 
 from src.config.store import ConfigStore
@@ -47,3 +48,17 @@ def parse_conection_profile(args: argparse.Namespace,
 
     return None, Exception('No connection string detected (argument, '
                            'profile or default profile)')
+
+
+def setup_connection_profile_args(parser):
+    connection_string = os.getenv(SB_CONNECTION_STRING)
+
+    need_connection = ('profile' not in sys.argv) and not bool(
+        connection_string)
+    cs = parser.add_mutually_exclusive_group(required=need_connection)
+    cs.add_argument('--connection',
+                    action='store', default=connection_string,
+                    help="Service bus connection string " +
+                    f"(env {SB_CONNECTION_STRING})")
+    cs.add_argument('--profile',
+                    action='store', help='Connection profile')

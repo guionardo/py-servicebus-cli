@@ -5,7 +5,8 @@ from azure.servicebus import ServiceBusClient
 from azure.servicebus._common.constants import (ServiceBusReceiveMode,
                                                 ServiceBusSubQueue)
 from azure.servicebus.management import ServiceBusAdministrationClient
-from src.cli.tools import parse_conection_profile
+from src.cli.tools import (parse_conection_profile,
+                           setup_connection_profile_args)
 from src.config.store import ConfigStore
 from src.tools.sb import validate_queue_name
 from tqdm import tqdm
@@ -26,6 +27,8 @@ def setup_queue_tools(sub_commands):
                     help='Empty dead letter queue')
     sc.add_argument('--delete', action='store',
                     metavar='queue_name', help='Delete queue')
+
+    setup_connection_profile_args(p)
 
 
 def tool_queue(args: argparse.Namespace,
@@ -49,7 +52,7 @@ def tool_queue(args: argparse.Namespace,
 
 def create_queue(sb_mgmt_client: ServiceBusAdministrationClient,
                  args: argparse.Namespace,
-                 parser: argparse.ArgumentParser):    
+                 parser: argparse.ArgumentParser):
     if not validate_queue_name(args.create, False):
         parser.exit(1, f'Invalid queue name "{args.create}"')
 
@@ -99,7 +102,7 @@ def clear_deadletter(sb_mgmt_client: ServiceBusAdministrationClient,
 
 def delete_queue(sb_mgmt_client: ServiceBusAdministrationClient,
                  args: argparse.Namespace,
-                 parser: argparse.ArgumentParser):    
+                 parser: argparse.ArgumentParser):
     if not validate_queue_name(args.delete, False):
         parser.exit(1, f'Invalid queue name "{args.delete}"')
     try:
