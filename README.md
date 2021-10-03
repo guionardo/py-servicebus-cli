@@ -1,6 +1,6 @@
 # sbcli-furlan
 
-Azure Service Bus CLI - v0.0.6
+Azure Service Bus CLI - v0.0.7
 
 [![Python application](https://github.com/guionardo/py-servicebus-cli/actions/workflows/python-app.yml/badge.svg)](https://github.com/guionardo/py-servicebus-cli/actions/workflows/python-app.yml)
 [![Upload Python Package](https://github.com/guionardo/py-servicebus-cli/actions/workflows/python-publish.yml/badge.svg)](https://github.com/guionardo/py-servicebus-cli/actions/workflows/python-publish.yml)
@@ -30,8 +30,7 @@ pip install sbcli-furlan
 
 ``` bash
 $ sbcli --help
-usage: sbcli [-h] [--version] [--connection CONNECTION | --profile PROFILE]
-             [--no-logging] [--debug]
+usage: sbcli [-h] [--version] [--no-logging] [--debug]
              {list,queue,topic,download,upload,profile} ...
 
 Azure Service Bus CLI
@@ -39,10 +38,6 @@ Azure Service Bus CLI
 optional arguments:
   -h, --help            show this help message and exit
   --version             show program's version number and exit
-  --connection CONNECTION
-                        Service bus connection string (env
-                        SB_CONNECTION_STRING)
-  --profile PROFILE     Connection profile
   --no-logging
   --debug               Set debug level to log
 
@@ -54,7 +49,7 @@ actions:
     upload              Upload message
     profile             Connection profiles
 
-You are using a version ahead (v0.0.6) of pypi (v0.0.5). Log file:
+You are using a version ahead (v0.0.7) of pypi (v0.0.6). Log file:
 /home/guionardo/.log/sbcli.log
 ```
 
@@ -64,12 +59,17 @@ You are using a version ahead (v0.0.6) of pypi (v0.0.5). Log file:
 $ sbcli list --help
 usage: sbcli list [-h] (--queue QUEUE | --topic TOPIC)
                   [--type {text,csv,table}]
+                  (--connection CONNECTION | --profile PROFILE)
 
 optional arguments:
   -h, --help            show this help message and exit
   --queue QUEUE         Queue name (allow mask * and ?)
   --topic TOPIC         Topic name (allow mask * and ?)
   --type {text,csv,table}
+  --connection CONNECTION
+                        Service bus connection string (env
+                        SB_CONNECTION_STRING)
+  --profile PROFILE     Connection profile
 ```
 
 ### QUEUE
@@ -78,6 +78,7 @@ optional arguments:
 $ sbcli queue --help
 usage: sbcli queue [-h]
                    (--create queue_name | --clear-dead-letter queue_name | --delete queue_name)
+                   (--connection CONNECTION | --profile PROFILE)
 
 optional arguments:
   -h, --help            show this help message and exit
@@ -85,6 +86,10 @@ optional arguments:
   --clear-dead-letter queue_name
                         Empty dead letter queue
   --delete queue_name   Delete queue
+  --connection CONNECTION
+                        Service bus connection string (env
+                        SB_CONNECTION_STRING)
+  --profile PROFILE     Connection profile
 ```
 
 ### TOPIC
@@ -105,6 +110,8 @@ $ sbcli download --help
 usage: sbcli download [-h] [--output OUTPUT] [--file-prefix FILE_PREFIX]
                       [--dead-letter] [--timeout TIMEOUT] [--peek]
                       (--queue QUEUE | --topic TOPIC) [--max-count MAX_COUNT]
+                      [--no-props]
+                      (--connection CONNECTION | --profile PROFILE)
 
 optional arguments:
   -h, --help            show this help message and exit
@@ -119,6 +126,11 @@ optional arguments:
   --topic TOPIC         Topic name
   --max-count MAX_COUNT
                         Maximum message count
+  --no-props            Ignore creation of property file for each message
+  --connection CONNECTION
+                        Service bus connection string (env
+                        SB_CONNECTION_STRING)
+  --profile PROFILE     Connection profile
 ```
 
 ### UPLOAD
@@ -128,6 +140,7 @@ $ sbcli upload --help
 usage: sbcli upload [-h] --source SOURCE [--max-count MAX_COUNT]
                     (--queue QUEUE | --topic TOPIC)
                     [--no-move-sent | --move-sent FOLDER]
+                    (--connection CONNECTION | --profile PROFILE)
 
 optional arguments:
   -h, --help            show this help message and exit
@@ -138,6 +151,10 @@ optional arguments:
   --topic TOPIC         Topic name
   --no-move-sent        No move sent files to ./sent folder
   --move-sent FOLDER    Move to folder after sucessfull sending
+  --connection CONNECTION
+                        Service bus connection string (env
+                        SB_CONNECTION_STRING)
+  --profile PROFILE     Connection profile
 ```
 
 ### PROFILE
@@ -165,5 +182,5 @@ optional arguments:
 
 ```
 ./src/cli/tool_topic.py:14:    # TODO: Implementar tool topic
-./src/cli/tools/download.py:151:    # TODO: Implementar download de tópicos
+./src/cli/tools/download.py:187:    # TODO: Implementar download de tópicos
 ```

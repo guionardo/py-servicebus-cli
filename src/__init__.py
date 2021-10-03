@@ -1,4 +1,4 @@
-__version__ = '0.0.6'
+__version__ = '0.0.7'
 __tool_name__ = 'sbcli'
 __description__ = 'Azure Service Bus CLI'
 __author__ = 'Guionardo Furlan'
