@@ -1,3 +1,6 @@
+from azure.servicebus.management import ServiceBusAdministrationClient
+
+
 class ServiceBusConnectionString:
 
     __slots__ = ['endpoint', 'shared_access_key_name', 'shared_access_key']
