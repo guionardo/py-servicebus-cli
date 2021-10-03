@@ -1,7 +1,8 @@
 import argparse
-import sys
+import csv
 import json
 import os
+import sys
 
 import xmltodict
 from azure.servicebus import ServiceBusClient, ServiceBusSubQueue
@@ -125,7 +126,7 @@ def _tool_peek_queue(args: argparse.Namespace,
                         max_wait_time=max_timeout):
                     received += 1
                     body = next(message.body)
-                    ext = _get_extension(body)
+                    ext = _get_extension(body, message._encoding)
                     file_name = os.path.join(
                         output, "{0}{1}_{2}{3}".format(
                             file_prefix,
@@ -166,15 +167,64 @@ def _get_output(source, output_name, dlq):
     return output
 
 
-def _get_extension(content: bytes):
-    str_content = content.decode('utf-8')
+def _get_extension(content: bytes, message_encoding='utf-8'):
+    str_content = None
+    encodings = set(['utf-8', 'ascii'])
+    encodings.add(message_encoding)
+    for encoding in encodings:
+        try:
+            str_content = content.decode(encoding)
+            break
+        except UnicodeDecodeError:
+            get_console().warning('Failed on decoding %s', encoding)
+
+    if not str_content:
+        get_console().info('Assuming binary data')
+        return '.bin'
+
+    if _try_parse_json(str_content):
+        get_console().info('Detected JSON content')
+        return '.json'
+
+    if _try_parse_xml(str_content):
+        get_console().info('Detected XML content')
+        return '.xml'
+
+    if _try_parse_csv(str_content):
+        get_console().info('Detected CSV content')
+        return '.csv'
+
+    get_console().info('Detected TEXT content')
+    return '.txt'
+
+
+def _try_parse_json(content):
     try:
-        _ = json.loads(str_content)
+        _ = json.loads(content)
         return '.json'
     except json.JSONDecodeError:
-        pass
+        return None
+
+
+def _try_parse_xml(content: str):
     try:
-        _ = xmltodict.parse(str_content)
+        _ = xmltodict.parse(content)
         return '.xml'
     except Exception:
-        return '.txt'
+        return None
+
+
+def _try_parse_csv(content: str):
+    try:
+        lines = content.splitlines()
+        reader = csv.reader(lines)
+        row_count = 0
+        col_count = 0
+        for row in reader:
+            row_count += 1
+            col_count = max(len(row), col_count)
+
+        if row_count > 0 and col_count > 1:
+            return '.csv'
+    except Exception:
+        return None
